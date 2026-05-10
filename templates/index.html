@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHANTOM // CYBERLAB</title>
+    <meta name="description" content="Cybersecurity lab simulation tool for educational purposes">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    
+    <div class="cyber-cursor" id="cursorCircle"></div>
+    <div class="cyber-cursor-dot" id="cursorDot"></div>
+
+    
+    <canvas id="matrixCanvas"></canvas>
+
+    
+    <div class="scan-lines"></div>
+
+    
+    <div class="crt-overlay"></div>
+
+    
+    <div class="boot-screen" id="bootScreen">
+        <div class="boot-content">
+            <pre id="bootText" class="boot-text"></pre>
+            <div class="boot-progress">
+                <div class="boot-bar" id="bootBar"></div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="app-container" id="appContainer" style="display:none;">
+
+        
+        <header class="top-bar">
+            <div class="top-left">
+                <div class="dragon-logo">
+                    <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="kali-dragon">
+                        
+                        <defs>
+                            <filter id="dragon-glow">
+                                <feGaussianBlur stdDeviation="1.5" result="blur" />
+                                <feMerge>
+                                    <feMergeNode in="blur" />
+                                    <feMergeNode in="SourceGraphic" />
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <g filter="url(#dragon-glow)" fill="currentColor">
+                            
+                            <path
+                                d="M55 12 C58 10, 62 8, 65 10 C67 11, 68 13, 67 15 C66 17, 63 18, 61 17 C60 19, 62 22, 60 24 C58 26, 55 25, 53 23 L52 22 C50 24, 48 27, 46 30 C44 33, 42 37, 41 40" />
+                            
+                            <circle cx="62" cy="13" r="1.2" />
+                            
+                            <path d="M58 10 C56 6, 58 3, 62 2 C60 5, 59 7, 59 9" />
+                            <path d="M63 9 C64 5, 67 3, 71 4 C68 6, 66 8, 64 10" />
+                            
+                            <path d="M67 15 C70 16, 73 15, 75 13 C74 16, 71 18, 68 17 C66 19, 64 20, 61 19" />
+                            
+                            <path d="M69 14 L70 12 L71 14.5 M72 13.5 L73 11.5 L73.5 14" />
+                            
+                            <path d="M53 23 C50 26, 47 30, 45 34 C43 38, 41 42, 40 46 C39 50, 38 54, 38 58" />
+                            
+                            <path d="M38 58 C37 62, 36 65, 34 68 C32 70, 29 72, 26 73 C23 74, 19 74, 16 73" />
+                            
+                            <path
+                                d="M55 15 C53 13, 51 14, 50 16 C48 14, 46 15, 45 17 C43 15, 41 16, 40 18 C38 17, 36 18, 35 20 C33 19, 31 20, 30 22 C28 21, 26 22, 25 24 C24 26, 24 28, 25 30" />
+                            
+                            <path
+                                d="M48 20 C44 16, 38 12, 30 10 C24 8, 16 8, 10 12 C16 10, 22 10, 28 12 C34 14, 40 18, 44 22"
+                                opacity="0.6" />
+                            <path
+                                d="M44 24 C40 18, 34 14, 26 12 C20 10, 12 12, 6 16 C12 13, 18 12, 24 13 C32 15, 38 20, 42 26"
+                                opacity="0.4" />
+                            
+                            <path d="M48 20 L42 10 M45 22 L36 11 M42 25 L30 12 M39 28 L24 14" />
+                            
+                            <path
+                                d="M16 73 C12 72, 9 70, 7 67 C5 64, 5 60, 7 57 C9 54, 12 52, 16 52 C19 52, 22 53, 24 56 C22 54, 19 53, 17 54 C14 55, 12 57, 11 60 C10 63, 11 66, 13 68 C15 70, 18 71, 20 70" />
+                            
+                            <path d="M7 57 C4 55, 2 52, 3 49 C4 51, 5 53, 7 55" />
+                            
+                            <path
+                                d="M38 58 C40 60, 42 62, 44 61 C42 63, 40 64, 38 62 M36 64 C38 66, 40 68, 42 67 C40 69, 38 69, 36 67" />
+                            
+                            <path d="M40 46 C42 44, 44 46, 43 49 C42 52, 40 54, 38 56" opacity="0.3" />
+                            <path d="M42 42 C44 40, 46 42, 45 45 C44 48, 42 50, 40 52" opacity="0.2" />
+                        </g>
+                    </svg>
+                </div>
+                <div class="logo-glow">PHANTOM</div>
+                <span class="version-tag">v2.0</span>
+                <span class="classification-badge">SECURE SESSION</span>
+            </div>
+            <div class="top-center">
+                <div class="hex-stream" id="hexStream"></div>
+            </div>
+            <div class="top-right">
+                <div class="status-pulse">
+                    <span class="pulse-dot"></span>
+                    <span class="status-label">SYS_ONLINE</span>
+                </div>
+                <div class="clock-display" id="clockDisplay">
+                    <span class="clock-date" id="clockDate"></span>
+                    <span class="clock-time" id="clockTime"></span>
+                </div>
+            </div>
+        </header>
+
+        
+        <section class="intel-bar" id="intelBar">
+            <div class="intel-card" id="ipCard">
+                <div class="intel-label">PUBLIC IP</div>
+                <div class="intel-value" id="publicIp">
+                    <span class="typing-cursor">scanning...</span>
+                </div>
+            </div>
+            <div class="intel-card" id="localIpCard">
+                <div class="intel-label">LOCAL IP</div>
+                <div class="intel-value" id="localIp">---</div>
+            </div>
+            <div class="intel-card" id="locationCard">
+                <div class="intel-label">GEO LOCATION</div>
+                <div class="intel-value" id="geoLocation">---</div>
+            </div>
+            <div class="intel-card" id="ispCard">
+                <div class="intel-label">ISP / ORG</div>
+                <div class="intel-value" id="ispOrg">---</div>
+            </div>
+            <div class="intel-card" id="hostnameCard">
+                <div class="intel-label">HOSTNAME</div>
+                <div class="intel-value" id="hostname">---</div>
+            </div>
+            <div class="intel-card" id="osCard">
+                <div class="intel-label">OS / ARCH</div>
+                <div class="intel-value" id="osInfo">---</div>
+            </div>
+            <div class="intel-card vpn-check" id="vpnCard">
+                <div class="intel-label">VPN STATUS</div>
+                <div class="intel-value" id="vpnStatus">
+                    <span class="vpn-checking">CHECKING...</span>
+                </div>
+            </div>
+        </section>
+
+        
+        <main class="main-grid">
+
+            
+            <section class="terminal-panel">
+                <div class="terminal-header">
+                    <div class="terminal-dots">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <span class="terminal-title">root@phantom:~# CONFIG</span>
+                    <span class="terminal-minimize">_</span>
+                </div>
+                <div class="terminal-body">
+
+                    
+                    <div class="term-section">
+                        <div class="term-prompt">
+                            <span class="prompt-user">root</span><span class="prompt-at">@</span><span
+                                class="prompt-host">phantom</span><span class="prompt-colon">:</span><span
+                                class="prompt-path">~</span><span class="prompt-dollar">$</span>
+                            <span class="prompt-cmd">set_target</span>
+                        </div>
+                        <div class="term-input-group">
+                            <span class="input-label-cyber">TARGET_PHONE &gt;</span>
+                            <div class="cyber-input-wrap">
+                                <span class="cyber-prefix">+92</span>
+                                <input type="tel" id="phoneInput" placeholder="3XXXXXXXXX" maxlength="10"
+                                    autocomplete="off" spellcheck="false">
+                                <div class="input-scan-line"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="term-section">
+                        <div class="term-prompt">
+                            <span class="prompt-user">root</span><span class="prompt-at">@</span><span
+                                class="prompt-host">phantom</span><span class="prompt-colon">:</span><span
+                                class="prompt-path">~</span><span class="prompt-dollar">$</span>
+                            <span class="prompt-cmd">set_rounds</span>
+                        </div>
+                        <div class="term-input-group">
+                            <span class="input-label-cyber">ITERATIONS &gt;</span>
+                            <div class="rounds-ctrl">
+                                <button class="ctrl-btn" onclick="changeRounds(-1)">&#x25C0;</button>
+                                <div class="rounds-display" id="roundsDisplay">01</div>
+                                <button class="ctrl-btn" onclick="changeRounds(1)">&#x25B6;</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="term-section">
+                        <div class="term-prompt">
+                            <span class="prompt-user">root</span><span class="prompt-at">@</span><span
+                                class="prompt-host">phantom</span><span class="prompt-colon">:</span><span
+                                class="prompt-path">~</span><span class="prompt-dollar">$</span>
+                            <span class="prompt-cmd">load_payloads</span>
+                            <span class="module-counter" id="selectedCount">[0 loaded]</span>
+                        </div>
+                        <div class="payload-actions">
+                            <button class="payload-btn" onclick="selectAll()">// SELECT_ALL</button>
+                            <button class="payload-btn" onclick="deselectAll()">// CLEAR_ALL</button>
+                        </div>
+                        <div class="payload-container" id="modulesContainer">
+                            <div class="loading-state">
+                                <div class="cyber-spinner"></div>
+                                <span>Loading exploit modules...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="term-section execute-section">
+                        <button class="execute-btn" id="launchBtn" onclick="launchAttack()">
+                            <span class="exec-icon">&#9889;</span>
+                            <span class="exec-text" id="execText">EXECUTE ATTACK</span>
+                            <div class="exec-scan"></div>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            
+            <section class="dashboard-panel" id="dashboardPanel">
+                <div class="terminal-header">
+                    <div class="terminal-dots">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <span class="terminal-title">MISSION_CONTROL // DASHBOARD</span>
+                    <button class="abort-btn" id="stopBtn" onclick="stopAttack()" style="display:none;">
+                        [ABORT_MISSION]
+                    </button>
+                </div>
+                <div class="terminal-body dashboard-body">
+
+                    
+                    <div class="idle-screen" id="idleState">
+                        <div class="radar-container">
+                            <div class="radar-ring ring-1"></div>
+                            <div class="radar-ring ring-2"></div>
+                            <div class="radar-ring ring-3"></div>
+                            <div class="radar-sweep"></div>
+                            <div class="radar-center"></div>
+                        </div>
+                        <div class="idle-text">
+                            <span class="glitch-text" data-text="AWAITING_ORDERS">AWAITING_ORDERS</span>
+                            <p>Configure payload and execute when ready</p>
+                        </div>
+                    </div>
+
+                    
+                    <div class="active-dashboard" id="activeDashboard" style="display:none;">
+
+                        
+                        <div class="stat-row">
+                            <div class="stat-block stat-success">
+                                <div class="stat-number" id="statSent">0</div>
+                                <div class="stat-name">DELIVERED</div>
+                                <div class="stat-bar-mini">
+                                    <div class="stat-fill-mini" id="sentFill"></div>
+                                </div>
+                            </div>
+                            <div class="stat-block stat-fail">
+                                <div class="stat-number" id="statFailed">0</div>
+                                <div class="stat-name">FAILED</div>
+                                <div class="stat-bar-mini">
+                                    <div class="stat-fill-mini" id="failFill"></div>
+                                </div>
+                            </div>
+                            <div class="stat-block stat-warn">
+                                <div class="stat-number" id="statRateLimit">0</div>
+                                <div class="stat-name">BLOCKED</div>
+                                <div class="stat-bar-mini">
+                                    <div class="stat-fill-mini" id="rateFill"></div>
+                                </div>
+                            </div>
+                            <div class="stat-block stat-err">
+                                <div class="stat-number" id="statErrors">0</div>
+                                <div class="stat-name">ERRORS</div>
+                                <div class="stat-bar-mini">
+                                    <div class="stat-fill-mini" id="errFill"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="progress-block">
+                            <div class="progress-info">
+                                <span class="progress-status" id="progressLabel">INITIALIZING...</span>
+                                <span class="progress-pct" id="progressValue">0%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" id="progressBar"></div>
+                                <div class="progress-glow" id="progressGlow"></div>
+                                <div class="progress-particles" id="progressParticles"></div>
+                            </div>
+                            <div class="progress-details">
+                                <span id="roundInfo">ROUND 0/0</span>
+                                <span id="timeInfo">0.0s</span>
+                            </div>
+                        </div>
+
+                        
+                        <div class="feed-block">
+                            <div class="feed-title">
+                                <span class="live-indicator"></span>
+                                <span>LIVE_OUTPUT</span>
+                                <span class="feed-scroll-hint">// auto-scroll</span>
+                            </div>
+                            <div class="feed-terminal" id="feedContainer">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        
+        <footer class="bottom-bar">
+            <span class="warning-flash">&#9888; FOR AUTHORIZED LAB USE ONLY</span>
+            <div class="footer-links">
+                <a href="https://github.com/shariq256" target="_blank" class="gh-link">[ GITHUB ]</a>
+                <span class="separator">//</span>
+                <span>@Irkhsg</span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════════════
+        //  SYNTH AUDIO ENGINE & VISUAL FX
+        // ═══════════════════════════════════════════════════════════════════════
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSfx(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                const now = audioCtx.currentTime;
+                
+                if (type === 'hover') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(1000, now + 0.03);
+                    gain.gain.setValueAtTime(0.015, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+                    osc.start(now); osc.stop(now + 0.03);
+                } else if (type === 'click') {
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.exponentialRampToValueAtTime(50, now + 0.08);
+                    gain.gain.setValueAtTime(0.03, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                    osc.start(now); osc.stop(now + 0.08);
+                } else if (type === 'error') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(100, now);
+                    gain.gain.setValueAtTime(0.04, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                    osc.start(now); osc.stop(now + 0.3);
+                } else if (type === 'launch') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.4);
+                    gain.gain.setValueAtTime(0.06, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                    osc.start(now); osc.stop(now + 0.4);
+                }
+            } catch(e) {}
+        }
+
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.closest('button, .payload-item, .cat-header, .gh-link, input, .dot, .terminal-minimize')) {
+                playSfx('hover');
+                document.getElementById('cursorCircle').classList.add('hovering');
+            }
+        });
+        document.addEventListener('mouseout', (e) => {
+            if (e.target.closest('button, .payload-item, .cat-header, .gh-link, input, .dot, .terminal-minimize')) {
+                document.getElementById('cursorCircle').classList.remove('hovering');
+            }
+        });
+        document.addEventListener('mousedown', (e) => {
+            if (e.target.closest('button, .payload-item input, .cat-header, .gh-link, .dot, .terminal-minimize')) playSfx('click');
+        });
+
+        const cursorCircle = document.getElementById('cursorCircle');
+        const cursorDot = document.getElementById('cursorDot');
+        let cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+        let mx = cx, my = cy;
+        window.addEventListener('mousemove', e => { 
+            mx = e.clientX; 
+            my = e.clientY; 
+            if(cursorDot) {
+                cursorDot.style.left = mx + 'px'; 
+                cursorDot.style.top = my + 'px'; 
+            }
+        });
+        function animateCursor() {
+            cx += (mx - cx) * 0.25; 
+            cy += (my - cy) * 0.25;
+            if(cursorCircle) {
+                cursorCircle.style.left = cx + 'px'; 
+                cursorCircle.style.top = cy + 'px';
+            }
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // ═══════════════════════════════════════════════════════════════════════
+        //  BOOT SEQUENCE
+        // ═══════════════════════════════════════════════════════════════════════
+        const BOOT_LINES = [
+            "BIOS POST... OK",
+            "Initializing kernel modules............",
+            "Loading cybersec-framework v2.0.4......",
+            "Mounting encrypted filesystem /dev/sda1",
+            "Checking network interfaces...........",
+            "  eth0: UP  |  wlan0: DOWN",
+            "Establishing secure tunnel............",
+            "Loading exploit database..............",
+            "  > 8 categories indexed",
+            "  > 23 attack vectors loaded",
+            "Initializing proxy chain..............OK",
+            "Verifying SSL certificates............OK",
+            "Starting backend on :5000.............",
+            "Loading UI subsystem..................",
+            "",
+            "  ____  _   _    _    _   _ _____ ___  __  __ ",
+            " |  _ \\| | | |  / \\  | \\ | |_   _/ _ \\|  \\/  |",
+            " | |_) | |_| | / _ \\ |  \\| | | || | | | |\\/| |",
+            " |  __/|  _  |/ ___ \\| |\\  | | || |_| | |  | |",
+            " |_|   |_| |_/_/   \\_\\_| \\_| |_| \\___/|_|  |_|",
+            "",
+            "System ready. Launching interface..."
+        ];
+
+        let bootIndex = 0;
+        function runBoot() {
+            const el = document.getElementById('bootText');
+            const bar = document.getElementById('bootBar');
+            if (bootIndex < BOOT_LINES.length) {
+                el.textContent += BOOT_LINES[bootIndex] + '\n';
+                el.scrollTop = el.scrollHeight;
+                bar.style.width = ((bootIndex + 1) / BOOT_LINES.length * 100) + '%';
+                bootIndex++;
+                setTimeout(runBoot, 80 + Math.random() * 60);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('bootScreen').classList.add('boot-fade');
+                    setTimeout(() => {
+                        document.getElementById('bootScreen').style.display = 'none';
+                        document.getElementById('appContainer').style.display = 'flex';
+                        initApp();
+                    }, 600);
+                }, 400);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', runBoot);
+
+        // ═══════════════════════════════════════════════════════════════════════
+        //  APP INIT
+        // ═══════════════════════════════════════════════════════════════════════
+        let modules = {};
+        let selectedSites = new Set();
+        let currentSessionId = null;
+        let eventSource = null;
+        let pollInterval = null;
+        let rounds = 1;
+
+        function initApp() {
+            loadModules();
+            loadSysInfo();
+            updateClock();
+            setInterval(updateClock, 1000);
+            initMatrixRain();
+            initHexStream();
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════
+        //  CLOCK
+        // ═══════════════════════════════════════════════════════════════════════
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clockTime').textContent = now.toLocaleTimeString('en-US', { hour12: false });
+            document.getElementById('clockDate').textContent = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════
+        //  HEX STREAM (top bar decoration)
+        // ═══════════════════════════════════════════════════════════════════════
+        function initHexStream() {
+            const el = document.getElementById('hexStream');
+            setInterval(() => {
+                let hex = '';
+                for (let i = 0; i < 32; i++) {
+                    hex += Math.floor(Math.random() * 16).toString(16).toUpperCase();
+                    if ((i + 1) % 4 === 0 && i < 31) hex += ' ';
+                }
+                el.textContent = hex;
+            }, 100);
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════
+        //  SYSTEM INFO / IP CHECK
+        // ═══════════════════════════════════════════════════════════════════════
+        async function loadSysInfo() {
+            try {
+                const res = await fetch('/api/sysinfo');
+                const info = await res.json();
+
+                // Animate the reveal
+                typeValue('publicIp', info.public_ip, true);
+                setTimeout(() => typeValue('localIp', info.local_ip), 200);
+                setTimeout(() => {
+                    const loc = info.ip_info;
+                    typeValue('geoLocation', `${loc.city}, ${loc.region}, ${loc.country}`);
+                }, 400);
+                setTimeout(() => typeValue('ispOrg', info.ip_info.org || 'N/A'), 600);
+                setTimeout(() => typeValue('hostname', info.hostname), 800);
+                setTimeout(() => typeValue('osInfo', `${info.os} [${info.architecture}]`), 1000);
+
+                // VPN detection heuristic
+                setTimeout(() => {
+                    const vpnEl = document.getElementById('vpnStatus');
+                    const card = document.getElementById('vpnCard');
+                    const org = (info.ip_info.org || '').toLowerCase();
+                    const isVpn = org.includes('vpn') || org.includes('proxy') || org.includes('tor') ||
+                        org.includes('hide') || org.includes('private') || org.includes('tunnel') ||
+                        org.includes('mullvad') || org.includes('nord') || org.includes('express') ||
+                        org.includes('surfshark') || org.includes('proton');
+
+                    if (isVpn) {
+                        vpnEl.innerHTML = '<span class="vpn-on">&#9679; VPN ACTIVE</span>';
+                        card.classList.add('vpn-active');
+                    } else {
+                        vpnEl.innerHTML = '<span class="vpn-off">&#9679; EXPOSED - NO VPN</span>';
+                        card.classList.add('vpn-exposed');
+                    }
+                }, 1200);
+
+            } catch (e) {
+                document.getElementById('publicIp').textContent = 'ERROR';
+                document.getElementById('vpnStatus').innerHTML = '<span class="vpn-off">SCAN FAILED</span>';
+            }
+        }
+
+        function typeValue(elId, text, isIp) {
+            const el = document.getElementById(elId);
+            el.textContent = '';
+            let i = 0;
+            const chars = text.toString();
+            function type() {
+                if (i < chars.length) {
+                    el.textContent += chars[i];
+                    i++;
+                    setTimeout(type, 20 + Math.random() * 30);
+                } else if (isIp) {
+                    el.classList.add('ip-revealed');
+                }
+            }
+            type();
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════
+        //  MODULES
+        // ═══════════════════════════════════════════════════════════════════════
+        async function loadModules() {
+            try {
+                const res = await fetch('/api/modules');
+                modules = await res.json();
+                renderModules();
+            } catch (e) {
+                document.getElementById('modulesContainer').innerHTML =
+                    '<div class="term-error">ERROR: Failed to load modules. <button onclick="loadModules()" class="retry-link">[RETRY]</button></div>';
+            }
+        }
+
+        function renderModules() {
+            const container = document.getElementById('modulesContainer');
+            container.innerHTML = '';
+            const icons = {
+                carpool: '&#128663;', ecommerce: '&#128722;', entertainment: '&#127916;',
+                food: '&#127828;', payments: '&#128179;', realestate: '&#127968;',
+                sports: '&#9917;', voice: '&#128222;', others: '&#128230;'
+            };
+
+            for (const [cat, sites] of Object.entries(modules)) {
+                const div = document.createElement('div');
+                div.className = 'payload-category';
+                div.innerHTML = `
+                <div class="cat-header" onclick="toggleCat(this)">
+                    <span class="cat-icon">${icons[cat] || '&#128193;'}</span>
+                    <span class="cat-name">${cat.toUpperCase()}</span>
+                    <span class="cat-count">${sites.length}</span>
+                    <span class="cat-arrow">&#9654;</span>
+                </div>
+                <div class="cat-body">
+                    ${sites.map(s => `
+                        <label class="payload-item">
+                            <input type="checkbox" value="${s}" onchange="toggleSite('${s}',this.checked)">
+                            <span class="check-box"></span>
+                            <span class="payload-name">${s}</span>
+                            <span class="payload-status-dot"></span>
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+                container.appendChild(div);
+            }
+        }
+
+        function toggleCat(header) {
+            header.parentElement.classList.toggle('open');
+        }
+
+        function toggleSite(site, checked) {
+            checked ? selectedSites.add(site) : selectedSites.delete(site);
+            updateCount();
+        }
+
+        function selectAll() {
+            document.querySelectorAll('.payload-item input').forEach(cb => { cb.checked = true; selectedSites.add(cb.value); });
+            updateCount();
+        }
+
+        function deselectAll() {
+            document.querySelectorAll('.payload-item input').forEach(cb => cb.checked = false);
+            selectedSites.clear();
+            updateCount();
+        }
+
+        function updateCount() {
+            const el = document.getElementById('selectedCount');
+            el.textContent = `[${selectedSites.size} loaded]`;
+            el.classList.toggle('has-count', selectedSites.size > 0);
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════
+        //  ROUNDS
+        // ═══════════════════════════════════════════════════════════════════════
+        function changeRounds(delta) {
+            rounds = Math.max(1, Math.min(10, rounds + delta));
+            document.getElementById('roundsDisplay').textContent = String(rounds).padStart(2, '0');
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════
+        //  LAUNCH ATTACK
+        // ═══════════════════════════════════════════════════════════════════════
+        async function launchAttack() {
+            const phone = document.getElementById('phoneInput').value.trim();
+            if (!phone || phone.length < 10) { shake(document.querySelector('.cyber-input-wrap')); playSfx('error'); return; }
+            if (selectedSites.size === 0) { shake(document.querySelector('.payload-container')); playSfx('error'); return; }
+
+            const btn = document.getElementById('launchBtn');
+            btn.disabled = true;
+            btn.classList.add('executing');
+            document.getElementById('execText').textContent = 'EXECUTING...';
+
+            playSfx('launch');
+            document.body.classList.add('glitch-active');
+            setTimeout(() => document.body.classList.remove('glitch-active'), 400);
+
+            try {
+                const res = await fetch('/api/attack', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone: '+92' + phone, sites: Array.from(selectedSites), rounds })
+                });
+                const data = await res.json();
+                if (data.error) { alert(data.error); resetBtn(); return; }
+                currentSessionId = data.session_id;
+                showDashboard();
+                startPolling();
+            } catch (e) {
+                alert('Connection failed');
+                resetBtn();
+            }
+        }
+
+        function resetBtn() {
+            const btn = document.getElementById('launchBtn');
+            btn.disabled = false;
+            btn.classList.remove('executing');
+            document.getElementById('execText').textContent = 'EXECUTE ATTACK';
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════
+        //  DASHBOARD
+        // ═══════════════════════════════════════════════════════════════════════
+        function showDashboard() {
+            document.getElementById('idleState').style.display = 'none';
+            document.getElementById('activeDashboard').style.display = 'flex';
+            document.getElementById('stopBtn').style.display = 'inline-block';
+            document.getElementById('feedContainer').innerHTML = '';
+            ['statSent', 'statFailed', 'statRateLimit', 'statErrors'].forEach(id => document.getElementById(id).textContent = '0');
+            document.getElementById('progressBar').style.width = '0%';
+        }
+
+        function startPolling() {
+            if (typeof EventSource !== 'undefined') {
+                eventSource = new EventSource(`/api/attack/${currentSessionId}/stream`);
+                eventSource.onmessage = (e) => {
+                    const data = JSON.parse(e.data);
+                    updateDashboard(data);
+                    if (data.status === 'completed' || data.status === 'stopped') {
+                        eventSource.close();
+                        onComplete(data);
+                    }
+                };
+                eventSource.onerror = () => { eventSource.close(); pollFallback(); };
+            } else {
+                pollFallback();
+            }
+        }
+
+        function pollFallback() {
+            pollInterval = setInterval(async () => {
+                try {
+                    const r = await fetch(`/api/attack/${currentSessionId}`);
+                    const d = await r.json();
+                    updateDashboard(d);
+                    if (d.status === 'completed' || d.status === 'stopped') { clearInterval(pollInterval); onComplete(d); }
+                } catch (e) { }
+            }, 500);
+        }
+
+        let lastCount = 0;
+        function updateDashboard(d) {
+            document.getElementById('statSent').textContent = d.stats.sent;
+            document.getElementById('statFailed').textContent = d.stats.failed;
+            document.getElementById('statRateLimit').textContent = d.stats.rate_limited;
+            document.getElementById('statErrors').textContent = d.stats.errors;
+
+            // Mini bar fills
+            const total = Math.max(d.progress, 1);
+            document.getElementById('sentFill').style.width = (d.stats.sent / total * 100) + '%';
+            document.getElementById('failFill').style.width = (d.stats.failed / total * 100) + '%';
+            document.getElementById('rateFill').style.width = (d.stats.rate_limited / total * 100) + '%';
+            document.getElementById('errFill').style.width = (d.stats.errors / total * 100) + '%';
+
+            const pct = d.total > 0 ? Math.round(d.progress / d.total * 100) : 0;
+            document.getElementById('progressBar').style.width = pct + '%';
+            document.getElementById('progressGlow').style.width = pct + '%';
+            document.getElementById('progressValue').textContent = pct + '%';
+            document.getElementById('progressLabel').textContent =
+                d.status === 'running' ? 'ATTACKING...' : d.status === 'completed' ? 'MISSION COMPLETE' : 'ABORTED';
+            document.getElementById('roundInfo').textContent = `ROUND ${d.current_round}/${d.rounds}`;
+            document.getElementById('timeInfo').textContent = `${d.elapsed}s`;
+
+            // Feed
+            if (d.results.length > lastCount) {
+                const feed = document.getElementById('feedContainer');
+                const newItems = d.results.slice(lastCount);
+                for (const r of newItems) {
+                    const line = document.createElement('div');
+                    line.className = `feed-line feed-${r.status}`;
+                    const icons = { sent: '[+]', failed: '[-]', rate_limited: '[!]', error: '[X]', no_response: '[?]', module_not_found: '[?]' };
+                    line.innerHTML = `<span class="f-time">${r.timestamp}</span><span class="f-icon">${icons[r.status] || '[?]'}</span><span class="f-site">${r.site}</span><span class="f-status">${r.status.toUpperCase()}</span><span class="f-round">R${r.round}</span>`;
+                    feed.appendChild(line);
+                }
+                feed.scrollTop = feed.scrollHeight;
+                lastCount = d.results.length;
+            }
+        }
+
+        function onComplete(d) {
+            resetBtn();
+            document.getElementById('stopBtn').style.display = 'none';
+            lastCount = 0;
+            document.getElementById('dashboardPanel').classList.add('mission-done');
+            setTimeout(() => document.getElementById('dashboardPanel').classList.remove('mission-done'), 3000);
+        }
+
+        async function stopAttack() {
+            if (!currentSessionId) return;
+            try { await fetch(`/api/attack/${currentSessionId}/stop`, { method: 'POST' }); } catch (e) { }
+            if (eventSource) eventSource.close();
+            if (pollInterval) clearInterval(pollInterval);
+            resetBtn();
+            document.getElementById('stopBtn').style.display = 'none';
+            lastCount = 0;
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════
+        //  HELPERS
+        // ═══════════════════════════════════════════════════════════════════════
+        function shake(el) {
+            el.classList.add('shake');
+            setTimeout(() => el.classList.remove('shake'), 600);
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════
+        //  MATRIX RAIN
+        // ═══════════════════════════════════════════════════════════════════════
+        function initMatrixRain() {
+            const c = document.getElementById('matrixCanvas');
+            const ctx = c.getContext('2d');
+            function resize() { c.width = window.innerWidth; c.height = window.innerHeight; }
+            resize();
+            window.addEventListener('resize', resize);
+            const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン01@#$%&*+><';
+            const fontSize = 14;
+            const columns = Math.floor(c.width / fontSize);
+            const drops = new Array(columns).fill(1);
+            
+            let matrixMouseX = -100, matrixMouseY = -100;
+            window.addEventListener('mousemove', e => { matrixMouseX = e.clientX; matrixMouseY = e.clientY; });
+
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+                ctx.fillRect(0, 0, c.width, c.height);
+                ctx.font = fontSize + 'px Share Tech Mono';
+                for (let i = 0; i < drops.length; i++) {
+                    const dropX = i * fontSize;
+                    const dropY = drops[i] * fontSize;
+                    const ch = chars[Math.floor(Math.random() * chars.length)];
+                    
+                    const dist = Math.hypot(dropX - matrixMouseX, dropY - matrixMouseY);
+                    
+                    if (dist < 120) {
+                        ctx.fillStyle = `rgba(0, 255, 255, ${1 - dist/120})`; // Cyan glow near mouse
+                        ctx.fillText(ch, dropX, dropY);
+                        if (Math.random() > 0.3) drops[i]++; 
+                    } else {
+                        const brightness = Math.random();
+                        if (brightness > 0.90) {
+                            ctx.fillStyle = '#fff';
+                        } else {
+                            ctx.fillStyle = `rgba(0, ${180 + Math.floor(brightness * 75)}, ${Math.floor(brightness * 30)}, ${0.7 + brightness * 0.3})`;
+                        }
+                        ctx.fillText(ch, dropX, dropY);
+                    }
+                    
+                    if (dropY > c.height && Math.random() > 0.975) drops[i] = 0;
+                    drops[i]++;
+                }
+            }
+            setInterval(draw, 35);
+        }
+    </script>
+</body>
+
+</html>
